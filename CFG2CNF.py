@@ -8,7 +8,7 @@ variablesJar = ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M",
                 "W", "X", "Y", "Z"]
 
 
-def isUnitary(rule, variables):
+def isUnary(rule, variables):
     if rule[left] in variables and rule[right][0] in variables and len(rule[right]) == 1:
         return True
     return False
@@ -107,7 +107,7 @@ def unit_routine(rules, variables):
     unities, result = [], []
 
     for aRule in rules:
-        if isUnitary(aRule, variables):
+        if isUnary(aRule, variables):
             unities.append((aRule[left], aRule[right][0]))
         else:
             result.append(aRule)

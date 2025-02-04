@@ -1,6 +1,5 @@
 import json
 from collections import defaultdict
-
 from CFG2CNF import START, TERM, BIN, DEL, UNIT
 from helper import prettyForm
 
@@ -55,15 +54,51 @@ def cfg_paths(graph, cfg):
 
 
 class LabeledGraph:
-    def __init__(self, file_path):
+    def __init__(self, file_path, start_node=None):
+
         with open(file_path, 'r') as file:
             inputGraph = json.load(file)
 
-        self.vertices = inputGraph["Vertices"]
-        self.edges = []
+        # Builds an adjacency
+        adjacency_list = defaultdict(list)
         for edge in inputGraph["Edges"]:
             u, v, label = edge.split(",")
-            self.edges.append((u.strip(), v.strip(), label.strip()))
+            u, v, label = u.strip(), v.strip(), label.strip()
+            adjacency_list[u].append((v, label))
+
+        # If start_node exists, prune the graph
+        if start_node:
+            self.prune_graph(inputGraph, adjacency_list, start_node)
+        else:
+            self.vertices = inputGraph["Vertices"]
+            self.edges = [(u.strip(), v.strip(), label.strip()) for edge in inputGraph["Edges"]
+                          for u, v, label in [edge.split(",")]]
+
+    def prune_graph(self, inputGraph, adjacency_list, start_node):
+
+        # Performs BFS to find reachable nodes
+        reachable_nodes = set()
+        queue = [start_node]
+
+        while queue:
+            node = queue.pop(0)
+            if node not in reachable_nodes:
+                reachable_nodes.add(node)
+                for neighbor, _ in adjacency_list[node]:
+                    if neighbor not in reachable_nodes:
+                        queue.append(neighbor)
+
+        # Filters edges to only include those between reachable nodes
+        reachable_edges = []
+
+        for edge in inputGraph["Edges"]:
+            u, v, label = edge.split(",")
+            u, v, label = u.strip(), v.strip(), label.strip()
+
+            if u in reachable_nodes and v in reachable_nodes:
+                reachable_edges.append((u, v, label))
+
+        self.vertices, self.edges = list(reachable_nodes), reachable_edges
 
 
 class CFGParser:
@@ -120,12 +155,13 @@ if __name__ == "__main__":
             print(" -> ".join(path))
 
     # Extra Points Section
-    start_node = "A"
+    startNode = "A"
+    pruned_graph = LabeledGraph("graph.json", startNode)
 
-    filtered_result = {key: paths for key, paths in result.items() if key[0] == start_node}
+    result = cfg_paths(pruned_graph, cfg_input)
 
-    print(f"\n#Paths starting from node {start_node}:")
-    for (start, end), paths in filtered_result.items():
-        print(f"{start} -> {end}:")
+    print(f"\n#Paths starting from node {startNode}:")
+    for (start, end), paths in result.items():
+        print(f"Paths from {start} to {end}:")
         for path in paths:
             print(" -> ".join(path))
