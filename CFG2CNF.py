@@ -31,7 +31,7 @@ def START(productions, variables):
     return [('S0', [variables[0]])] + productions
 
 
-#Remove rules containing both terms and variables, like A->Bc, replacing by A->BZ and Z->c–––––––––––TERM
+#Remove rules containing both terms and variables, like A->Bc, replaced by A->BZ and Z->c----–––––––––––TERM
 def TERM(productions, variables):
     newProductions = []
     #create a dictionary for all base production, like A->a, in the form dic['a'] = 'A'

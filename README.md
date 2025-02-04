@@ -73,11 +73,24 @@ if __name__ == "__main__":
 
 ## Output Example
 ```
-Paths starting from node A:
-A -> B:
-x
-A -> C:
-x -> y
+#CFG converted to CNF:
+S -> H P | P G
+H -> O R
+P -> W R
+O -> y
+W -> j
+R -> k
+G -> x
+S0 -> H P | P G
+
+
+#All compliant paths:
+Paths from A to D:
+y -> k -> j -> k
+
+#Paths starting from node A:
+A -> D:
+y -> k -> j -> k
 ```
 
 ## Contributing
