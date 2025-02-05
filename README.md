@@ -15,10 +15,6 @@
    git clone https://github.com/your-username/CFG-Graph-Pathfinder.git
    cd CFG-Graph-Pathfinder
    ```
-2. Install dependencies (if any):
-   ```bash
-   pip install -r requirements.txt
-   ```
 
 ## Usage
 ### Run the Algorithm
@@ -30,19 +26,28 @@ By default, it loads a **graph from `graph.json`** and a **CFG from `grammar.jso
 ### Example
 ```python
 if __name__ == "__main__":
+
+    # Main Algorithm Section
     graph_input = LabeledGraph("graph.json")
     cfg_input = CFGParser("grammar.json")
 
-    # Find all compliant paths
     result = cfg_paths(graph_input, cfg_input)
 
-    # Extract paths starting from a specific node (optional)
-    start_node = "A"
-    filtered_result = {key: paths for key, paths in result.items() if key[0] == start_node}
+    print(f"#All compliant paths:")
+    for (start, end), paths in result.items():
+        print(f"Paths from {start} to {end}:")
+        for path in paths:
+            print(" -> ".join(path))
 
-    print(f"\nPaths starting from node {start_node}:")
-    for (start, end), paths in filtered_result.items():
-        print(f"{start} -> {end}:")
+    # Extra Points Section
+    startNode = "A"
+    pruned_graph = LabeledGraph("graph.json", startNode)
+
+    result = cfg_paths(pruned_graph, cfg_input)
+
+    print(f"\n#Paths starting from node {startNode}:")
+    for (start, end), paths in result.items():
+        print(f"Paths from {start} to {end}:")
         for path in paths:
             print(" -> ".join(path))
 ```
@@ -51,21 +56,24 @@ if __name__ == "__main__":
 ### Graph (`graph.json`)
 ```json
 {
-    "Vertices": ["A", "B", "C", "D"],
-    "Edges": ["A, B, x", "B, C, y", "C, D, z"]
+        "Vertices": ["A", "B", "C", "D", "E", "F"],
+        "Edges": ["A, B, x", "A, C, y", "C, D, k", "D, B, y", "D, C, j", "E, C, x", "F, E, k", "F, D, x"]
 }
 ```
 
 ### Grammar (`grammar.json`)
 ```json
 {
-    "terminals": ["x", "y", "z"],
-    "non_terminals": ["S", "A", "B"],
+    "terminals": ["j", "k", "x", "y"],
+    "non_terminals": ["S", "H", "P", "O", "W", "R", "G"],
     "productions": {
-        "S": [["A", "B"], ["B", "C"]],
-        "A": [["x"]],
-        "B": [["y"]],
-        "C": [["z"]]
+        "S": [["H", "P"], ["P", "G"]],
+        "H": [["O", "R"]],
+        "P": [["W", "R"]],
+        "O": [["y"]],
+        "W": [["j"]],
+        "R": [["k"]],
+        "G": [["x"]]
     },
     "start_symbol": "S"
 }
@@ -89,7 +97,7 @@ Paths from A to D:
 y -> k -> j -> k
 
 #Paths starting from node A:
-A -> D:
+Paths from A to D:
 y -> k -> j -> k
 ```
 

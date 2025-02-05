@@ -31,23 +31,20 @@ def START(productions, variables):
     return [('S0', [variables[0]])] + productions
 
 
-#Remove rules containing both terms and variables, like A->Bc, replaced by A->BZ and Z->c----–––––––––––TERM
+#Removes rules containing both terms and variables, like A->Bc, replaced by A->BZ and Z->c----–––––––––––TERM
 def TERM(productions, variables):
     newProductions = []
-    #create a dictionary for all base production, like A->a, in the form dic['a'] = 'A'
     dictionary = helper.setupDict(productions, variables, terms=K)
     for production in productions:
-        #check if the production is simple
         if isSimple(production):
-            #in that case there is nothing to change
+
             newProductions.append(production)
         else:
             for term in K:
                 for index, value in enumerate(production[right]):
                     if term == value and not term in dictionary:
-                        #it's created a new production variable->term and added to it
+
                         dictionary[term] = variablesJar.pop()
-                        #Variables set it's updated adding new variable
                         V.append(dictionary[term])
                         newProductions.append((dictionary[term], [term]))
 
@@ -56,11 +53,10 @@ def TERM(productions, variables):
                         production[right][index] = dictionary[term]
             newProductions.append((production[left], production[right]))
 
-    #merge created set and the introduced rules
     return newProductions
 
 
-#Eliminate non unit rules––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––BIN
+#Eliminates non unit rules––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––BIN
 def BIN(productions, variables):
     result = []
     for production in productions:
@@ -84,21 +80,14 @@ def BIN(productions, variables):
 #Delete non terminal rules–––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––––DEL
 def DEL(productions):
     newSet = []
-    #seekAndDestroy throw back in:
-    #        – outlaws all left side of productions such that right side is equal to the outlaw
-    #        – productions the productions without outlaws
     outlaws, productions = helper.seekAndDestroy(target='e', productions=productions)
-    #add new reformulation of old rules
+
     for outlaw in outlaws:
-        #consider every production: old + new resulting important when more than one outlaws are in the same prod.
         for production in productions + [e for e in newSet if e not in productions]:
-            #if outlaw is present on the right side of a rule
+
             if outlaw in production[right]:
-                #the rule is rewritten in all combination of it, rewriting "e" rather than outlaw
-                #this cycle prevent to insert duplicate rules
                 newSet = newSet + [e for e in helper.rewrite(outlaw, production) if e not in newSet]
 
-    #add unchanged rules and return
     return newSet + ([productions[i] for i in range(len(productions))
                       if productions[i] not in newSet])
 

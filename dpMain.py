@@ -36,7 +36,7 @@ def cfg_paths(graph, cfg):
                                             if new_path not in dp[A][C][lhs3]:
                                                 updates.append((A, C, lhs3, new_path))
 
-        # Apply updates after iteration
+        #Applys updates after iteration
         for A, C, lhs3, new_path in updates:
             if new_path not in dp[A][C][lhs3]:
                 dp[A][C][lhs3].add(new_path)
@@ -47,7 +47,7 @@ def cfg_paths(graph, cfg):
     start_symbol = cfg.start_symbol
     for u in dp.keys():
         for v in dp[u].keys():
-            if dp[u][v][start_symbol]:
+            if start_symbol in dp[u][v]:
                 valid_paths[(u, v)].extend(dp[u][v][start_symbol])
 
     return valid_paths
@@ -59,7 +59,7 @@ class LabeledGraph:
         with open(file_path, 'r') as file:
             inputGraph = json.load(file)
 
-        # Builds an adjacency
+        # Builds an adjacency list
         adjacency_list = defaultdict(list)
         for edge in inputGraph["Edges"]:
             u, v, label = edge.split(",")
@@ -76,7 +76,7 @@ class LabeledGraph:
 
     def prune_graph(self, inputGraph, adjacency_list, start_node):
 
-        # Performs BFS to find reachable nodes
+        #BFS to find reachable nodes
         reachable_nodes = set()
         queue = [start_node]
 
@@ -88,7 +88,6 @@ class LabeledGraph:
                     if neighbor not in reachable_nodes:
                         queue.append(neighbor)
 
-        # Filters edges to only include those between reachable nodes
         reachable_edges = []
 
         for edge in inputGraph["Edges"]:
