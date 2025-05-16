@@ -12,7 +12,7 @@
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/your-username/CFG-Graph-Pathfinder.git
+   git clone https://github.com/NAVIMO/CFG-Graph-Pathfinder.git
    cd CFG-Graph-Pathfinder
    ```
 
